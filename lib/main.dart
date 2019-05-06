@@ -25,7 +25,7 @@ class MyStatelessWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hello World'),
+        title: Text('Zio pera'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.shopping_cart),
