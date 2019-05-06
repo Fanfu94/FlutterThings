@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:bemis_app/FeatureHandler.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+String url = 'https://it.wikipedia.org/wiki/Pagina_principale';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Flutter Weview',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green, 
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Webview'),
+      routes: {
+        "/webview": (_) => WebviewScaffold(
+          url: url,
+          appBar: AppBar(
+            title: Text("Webview"),
+          ),
+          withJavascript: true,
+          withLocalStorage: true,
+          withZoom: true,
+        )
+      },
     );
   }
 }
@@ -20,69 +33,59 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  NewWeb createState() => NewWeb();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class NewWeb extends State<MyHomePage> {
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
+  final webview = FlutterWebviewPlugin();
+
+  TextEditingController controller = TextEditingController(text: url);
+
+  @override
+  Widget build(BuildContext context) {
+// TODO: implement build
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Webview"),
+      ),
+
+      body: Center(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: TextField(
+                controller: controller,
+              ),
+            ),
+            RaisedButton(
+              child: Text("Open Webview"),
+              onPressed: () {
+                Navigator.of(context).pushNamed("/webview");
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+// TODO: implement initState
+    super.initState();
+    webview.close();
+    controller.addListener(() {
+      url = controller.text;
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        leading: IconButton(
-            icon: Icon(Icons.apps),
-            //onPressed: ,
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.playlist_play),
-            tooltip: 'Air it'
-          ),
-          IconButton(
-            icon: Icon(Icons.playlist_add),
-            tooltip: 'Restitch it'
-          ),
-          IconButton(
-            icon: Icon(Icons.playlist_add_check),
-            tooltip: 'Repair it'
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            FeatureHandler().build(context)
-          ],
-        ),
-      ),
-      /*body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),*/
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
+  void dispose() {
+// TODO: implement dispose
+    webview.dispose();
+    controller.dispose();
+    super.dispose();
   }
 }
